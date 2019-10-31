@@ -47,9 +47,10 @@ public abstract class DivisionDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            divisionDao.insert(new Division("Title 1",1));
-            divisionDao.insert(new Division("Title 2", 2));
-            divisionDao.insert(new Division("Title 3", 3));
+            divisionDao.insert(new Division("Kitchen",0));
+            divisionDao.insert(new Division("Living room", 0));
+            divisionDao.insert(new Division("Master bedroom", 0));
+            divisionDao.insert(new Division("Guest's bedroom", 0));
             return null;
         }
     }
