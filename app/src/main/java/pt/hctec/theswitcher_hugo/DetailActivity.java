@@ -89,7 +89,7 @@ public class DetailActivity extends AppCompatActivity {
     private void saveDivision() {
         String title = editTextTitle.getText().toString();
         int state = toggleSwitch.isChecked() ? 1 : 0 ;
-        
+
         Intent data = new Intent();
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_STATE, state);
