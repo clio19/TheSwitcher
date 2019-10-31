@@ -26,7 +26,7 @@ public interface DivisionDao {
     @Query("DELETE FROM division_table")
     void deleteAllDivisions();
 
-    @Query("SELECT * FROM division_table ORDER BY title DESC ")
+    @Query("SELECT * FROM division_table ORDER BY title ASC ")
     LiveData<List<Division>> getAllDivisions();
 
 

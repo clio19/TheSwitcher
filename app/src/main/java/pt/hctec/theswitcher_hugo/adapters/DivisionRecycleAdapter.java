@@ -42,9 +42,14 @@ public class DivisionRecycleAdapter extends RecyclerView.Adapter <DivisionRecycl
     }
 
     public void setDivisions(List<Division> divisions) {
-        this.divisions = divisions;
-        notifyDataSetChanged();
+        this.divisions = divisions;   // TODO
+       // notifyDataSetChanged();  // Ou notifyItem inserted or removed
     }
+
+    public Division getDivisionAt(int adapterPosition) {
+            return divisions.get(adapterPosition);
+    }
+
 
     class DivisionHolder extends RecyclerView.ViewHolder {
         private TextView textViewTitle;
@@ -65,12 +70,16 @@ public class DivisionRecycleAdapter extends RecyclerView.Adapter <DivisionRecycl
                     }
                 }
             });
+
+            // TODO toggleStatus.setOnCheckedChangeListener();
         }
     }
 
     public interface OnItemClickListener {
         void onItemClick(Division division);
     }
+    // TODO on Switch toggle
+
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
