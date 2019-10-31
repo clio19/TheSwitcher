@@ -1,5 +1,6 @@
 package pt.hctec.theswitcher_hugo;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -26,9 +27,10 @@ public class DetailActivity extends AppCompatActivity {
             "pt.hctec.theswitcher_hugomendes.EXTRA_PRIORITY";
 
     private EditText editTextTitle;
-    private Switch statusDivision;
+    private Switch toggleSwitch;
     ImageView img;
     private TextView textDivision;
+    private  TextView statusDivision;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +38,14 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         editTextTitle = findViewById(R.id.edit_text_title);
-        statusDivision = findViewById(R.id.switchInitial);
+        toggleSwitch = findViewById(R.id.switchInitial);
         img= (ImageView) findViewById(R.id.headerImage);
 
         textDivision =  findViewById(R.id.textDivision);
+        statusDivision = findViewById(R.id.statusDivision);
+
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
@@ -48,15 +54,17 @@ public class DetailActivity extends AppCompatActivity {
             editTextTitle.setVisibility(View.GONE);
             textDivision.setText( " Your " + intent.getStringExtra(EXTRA_TITLE) + " light is");
             statusDivision.setText( intent.getIntExtra(EXTRA_STATE,1) == 1 ? " ON " : "OFF" );
-
-            // statusDivision.setChecked( intent.getIntExtra(EXTRA_STATE,0) == 1 ? true : false);
+            toggleSwitch.setVisibility(View.GONE);
             img.setImageResource( intent.getIntExtra(EXTRA_STATE,1) == 1 ? R.drawable.light_on : R.drawable.light_off);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_chevron_left_black_24dp);
+
         } else {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_black_24dp);
-            setTitle("Add Division");
+            setTitle("Please add Division");
         }
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,24 +75,21 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save_division:
-                saveDivision();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+        int id = item.getItemId();
+        if(id == android.R.id.home){
+            saveDivision();
+        } else if (id == R.id.save_division){
+            saveDivision();
         }
+        return super.onOptionsItemSelected(item);
     }
+
 
     private void saveDivision() {
         String title = editTextTitle.getText().toString();
-        int state = statusDivision.isChecked() ? 1 : 0 ;
-
-        if (title.trim().isEmpty()) {
-            Toast.makeText(this, "Please insert title for division", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        int state = toggleSwitch.isChecked() ? 1 : 0 ;
+        
         Intent data = new Intent();
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_STATE, state);
@@ -92,9 +97,12 @@ public class DetailActivity extends AppCompatActivity {
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
+            setResult(RESULT_CANCELED, data);
+        } else {
+
+            setResult(RESULT_OK, data);
         }
 
-        setResult(RESULT_OK, data);
         finish();
     }
 

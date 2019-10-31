@@ -1,6 +1,7 @@
 package pt.hctec.theswitcher_hugo;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int ADD_DIVISION_REQUEST = 1;
     public static final int VIEW_DIVISION_REQUEST = 2;
-    public static final int UPDATE_DIVISION_REQUEST = 3;
+    //public static final int UPDATE_DIVISION_REQUEST = 3;
 
     private DivisionViewModel divisionViewModel;
 
@@ -49,12 +52,14 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.abs_layout);
         */
 
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.actionbar);
+
         recyclerView = findViewById(R.id.recycler_view);
         // DIVIDER
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        // final NoteRecycleAdapter adapter = new NoteRecycleAdapter();
         adapter = new DivisionRecycleAdapter();
         recyclerView.setAdapter(adapter);
 
@@ -62,15 +67,10 @@ public class MainActivity extends AppCompatActivity {
         divisionViewModel = ViewModelProviders.of(this).get(DivisionViewModel.class);
         divisionViewModel.getAllDivisions().observe(this, new Observer<List<Division>>() {  // alldivisions Observer
             @Override
-            public void onChanged(@Nullable List<Division> divisions) { // actvity has to be in foreground
+            public void  onChanged(@Nullable List<Division> divisions) { // actvity has to be in foreground
                 // update Recycler view
                 adapter.setDivisions(divisions);
-
-                Log.i("MAIN WINDOW", "MyClass — onChanged " );
-
-                 adapter.notifyDataSetChanged();
             }
-
 
         });
 
@@ -99,10 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(DetailActivity.EXTRA_STATE, division.getState());
 
                 startActivityForResult(intent, VIEW_DIVISION_REQUEST);
-
             }
-        });
 
+        });
 
 
         buttonAddDivision = findViewById(R.id.floatingActionButton);
@@ -131,11 +130,26 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Division SAVED ", Toast.LENGTH_SHORT).show();
 
         }
-        else if (requestCode == UPDATE_DIVISION_REQUEST) {
+        else if (requestCode == VIEW_DIVISION_REQUEST && resultCode == RESULT_OK ) {
+            int id = data.getIntExtra(DetailActivity.EXTRA_ID, -1);
+
+            if (id == -1) {
+                Toast.makeText(this, "Note can't be updated", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String title = data.getStringExtra(DetailActivity.EXTRA_TITLE);
+            int state = data.getIntExtra(DetailActivity.EXTRA_STATE, 0);
+
+            Division division = new Division(title, state);
+            division.setId(id);
+            divisionViewModel.update(division);
+
+            Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show();
 
 
         }  else {
-            Toast.makeText(this, "Division NOT Saved", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Division NOT Saved " , Toast.LENGTH_SHORT).show();
         }
     }
 
